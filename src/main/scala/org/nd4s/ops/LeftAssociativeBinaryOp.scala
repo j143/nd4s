@@ -6,8 +6,7 @@ import org.nd4j.linalg.api.ops.{BaseScalarOp, Op}
 import org.nd4j.linalg.factory.Nd4j
 import org.nd4s.Implicits._
 
-trait LeftAssociativeBinaryOp {
-
+trait LeftAssociativeBinaryOp extends Op{
   def op(origin: IComplexNumber, other: Double): IComplexNumber = op(origin)
 
   def op(origin: IComplexNumber, other: Float): IComplexNumber = op(origin)
@@ -23,4 +22,6 @@ trait LeftAssociativeBinaryOp {
   def op(origin: Float): Float
 
   def op(origin: IComplexNumber): IComplexNumber
+
+  def opNum():Int = 0
 }

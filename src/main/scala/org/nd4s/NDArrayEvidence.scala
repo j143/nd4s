@@ -8,13 +8,19 @@ import org.nd4s.Implicits._
 object Evidences {
   implicit val double = DoubleNDArrayEvidence
   implicit val float = FloatNDArrayEvidence
-  implicit val complex = ComplexNDArrayEvidence
+  /*
+   Drop Complex Number Support tentatively, since current ND4J Complex Number(v0.4-rc3.9) API is broken.
+ */
+//  implicit val complex = ComplexNDArrayEvidence
 }
 
 object NDArrayEvidence {
   implicit val doubleNDArrayEvidence = DoubleNDArrayEvidence
 
-  implicit val complexNDArrayEvidence = ComplexNDArrayEvidence
+  /*
+   Drop Complex Number Support tentatively, since current ND4J Complex Number(v0.4-rc3.9) API is broken.
+ */
+//  implicit val complexNDArrayEvidence = ComplexNDArrayEvidence
 }
 
 trait NDArrayEvidence[NDArray <: INDArray, Value] {

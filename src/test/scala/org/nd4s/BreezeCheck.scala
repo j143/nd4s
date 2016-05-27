@@ -17,7 +17,6 @@ class BreezeCheck extends FlatSpec with Checkers {
     check {
       Prop.forAll {
         (ndArray: INDArray) =>
-          ndArray.setOrder('f')
           val shape = ndArray.shape()
           val Array(row, col) = shape
           Prop.forAll(Gen.choose(0, row - 1), Gen.choose(0, row - 1), Gen.choose(0, col - 1), Gen.choose(0, col - 1)) {
@@ -53,11 +52,8 @@ class BreezeCheck extends FlatSpec with Checkers {
     for {
       rows <- Gen.choose(1, 100)
       columns <- Gen.choose(1, 100)
-    } yield {
-      val nd = Nd4j.rand(rows, columns)
-      nd.setOrder('f')
-      nd
-    }
+    } yield
+      Nd4j.rand('f', rows, columns)
   }
 
 }

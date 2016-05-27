@@ -126,22 +126,25 @@ class OperatableNDArrayTest extends FlatSpec with Matchers {
     b.get(1) should be(-3)
   }
 
-  it should "worked with ComplexNDArray correctly" in {
-    val complexNDArray =
-      Array(
-        Array(1 + i, 1 + i),
-        Array(1 + 3 * i, 1 + 3 * i)
-      ).toNDArray
-
-    val result = complexNDArray + 2
-    result shouldBe a[IComplexNDArray]
-
-    result shouldBe Nd4j.createComplex(
-      Array(
-        Array(Nd4j.createComplexNumber(3, 1), Nd4j.createComplexNumber(3, 1)),
-        Array(Nd4j.createComplexNumber(3, 3), Nd4j.createComplexNumber(3, 3)))
-    )
-  }
+  /*
+     Drop Complex Number Support tentatively, since current ND4J Complex Number(v0.4-rc3.9) API is broken.
+   */
+//  it should "worked with ComplexNDArray correctly" in {
+//    val complexNDArray =
+//      Array(
+//        Array(1 + i, 1 + i),
+//        Array(1 + 3 * i, 1 + 3 * i)
+//      ).toNDArray
+//
+//    val result = complexNDArray + 2
+//    result shouldBe a[IComplexNDArray]
+//
+//    result shouldBe Nd4j.createComplex(
+//      Array(
+//        Array(Nd4j.createComplexNumber(3, 1), Nd4j.createComplexNumber(3, 1)),
+//        Array(Nd4j.createComplexNumber(3, 3), Nd4j.createComplexNumber(3, 3)))
+//    )
+//  }
 
   it should "not prevent any2stringadd syntax" in {
     val s:String = Nd4j.create(2,2) + ""
@@ -159,13 +162,17 @@ class OperatableNDArrayTest extends FlatSpec with Matchers {
     val sumValue = ndArray.sumT
     sumValue shouldBe a[java.lang.Double]
 
-    val complexNDArray = Nd4j.createComplex(ndArray)
+ /*
+   Drop Complex Number Support tentatively, since current ND4J Complex Number API is broken.
+ */
 
-    //return ComplexNumber in ComplexNDArray in IComplexNumber
-    complexNDArray.get(0) shouldBe a[IComplexNumber]
-    val sumComplexValue = complexNDArray.sumT
-    sumComplexValue shouldBe a[IComplexNumber]
-
+    //    val complexNDArray = Nd4j.createComplex(ndArray)
+//
+//    //return ComplexNumber in ComplexNDArray in IComplexNumber
+//    complexNDArray.get(0) shouldBe a[IComplexNumber]
+//    val sumComplexValue = complexNDArray.sumT
+//    sumComplexValue shouldBe a[IComplexNumber]
+//
     //switch return value with passing corresponding evidence explicitly
     val sumValueInFloatExplicit = ndArray.sumT(FloatNDArrayEvidence)
     sumValueInFloatExplicit shouldBe a[java.lang.Float]

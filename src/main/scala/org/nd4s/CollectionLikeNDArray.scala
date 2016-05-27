@@ -1,5 +1,6 @@
 package org.nd4s
 
+import org.nd4j.linalg.api.ops.Op
 import org.nd4s.ops._
 import org.nd4s.Implicits._
 import org.nd4j.linalg.api.complex.IComplexNumber
@@ -18,7 +19,7 @@ trait CollectionLikeNDArray[A <: INDArray] {
 
   def filterRCi(f: Double => Boolean)(g:IComplexNumber => Boolean)(implicit ev: NDArrayEvidence[A,_]): A = notCleanedUp { _ =>
     val shape = underlying.shape()
-    ev.reshape(Nd4j.getExecutioner.exec(FilterOps(ev.linearView(underlying), f,g)).z().asInstanceOf[A], shape: _*)
+    ev.reshape(Nd4j.getExecutioner.exec(FilterOps(ev.linearView(underlying), f,g):Op).z().asInstanceOf[A], shape: _*)
   }
 
   def filterRC(f: Double => Boolean)(g:IComplexNumber => Boolean)(implicit ev: NDArrayEvidence[A,_]): A = ev.dup(underlying).filterRCi(f)(g)
@@ -33,7 +34,7 @@ trait CollectionLikeNDArray[A <: INDArray] {
 
   def filterBitRCi(f: Double => Boolean)(g: IComplexNumber => Boolean)(implicit ev: NDArrayEvidence[A, _]): A = notCleanedUp { _ =>
     val shape = underlying.shape()
-    ev.reshape(Nd4j.getExecutioner.exec(BitFilterOps(ev.linearView(underlying), f, g)).z().asInstanceOf[A], shape: _*)
+    ev.reshape(Nd4j.getExecutioner.exec(BitFilterOps(ev.linearView(underlying), f, g):Op).z().asInstanceOf[A], shape: _*)
   }
 
   def filterBitRC(f: Double => Boolean)(g: IComplexNumber => Boolean)(implicit ev: NDArrayEvidence[A, _]): A = ev.dup(underlying).filterBitRCi(f)(g)
@@ -48,7 +49,7 @@ trait CollectionLikeNDArray[A <: INDArray] {
 
   def mapRCi(f: Double => Double)(g: IComplexNumber => IComplexNumber)(implicit ev: NDArrayEvidence[A, _]): A = notCleanedUp { _ =>
     val shape = underlying.shape()
-    ev.reshape(Nd4j.getExecutioner.exec(MapOps(ev.linearView(underlying), f, g)).z().asInstanceOf[A], shape: _*)
+    ev.reshape(Nd4j.getExecutioner.exec(MapOps(ev.linearView(underlying), f, g):Op).z().asInstanceOf[A], shape: _*)
   }
 
   def mapRC(f: Double => Double)(g: IComplexNumber => IComplexNumber)(implicit ev: NDArrayEvidence[A, _]): A = ev.dup(underlying).mapRCi(f)(g)(ev)
