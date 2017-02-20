@@ -1,13 +1,22 @@
-lazy val nd4jVersion = SettingKey[String]("nd4jVersion")
 
-lazy val root = (project in file(".")).settings(
+lazy val currentVersion = SettingKey[String]("currentVersion")
+lazy val nd4jVersion = SettingKey[String]("nd4jVersion")
+lazy val publishSomeThing = sys.props.getOrElse("repoType", default = "local").toLowerCase match {
+  case repoType if repoType.contains("nexus") => publisNexus
+  case repoType if repoType.contains("jfrog") => publishJfrog
+  case repoType if repoType.contains("bintray") => publishBintray
+  case repoType if repoType.contains("sonatype") => publishSonatype
+  case _ => publishLocalLocal
+}
+
+lazy val commonSettings = Seq(
   scalaVersion := "2.11.8",
   crossScalaVersions := Seq("2.10.6", "2.11.8"),
   name := "nd4s",
-  version := "0.7.2",
+  version := sys.props.getOrElse("currentVersion", default = "0.7.2"),
   organization := "org.nd4j",
-  resolvers += "Local Maven Repository" at "file:///" + Path.userHome.absolutePath + "/.m2/repository",
-  nd4jVersion := "0.7.2",
+  resolvers += Resolver.mavenLocal,
+  nd4jVersion := sys.props.getOrElse("nd4jVersion", default = "0.7.2"),
   libraryDependencies ++= Seq(
     "com.nativelibs4java" %% "scalaxy-loops" % "0.3.4",
     "org.nd4j" % "nd4j-api" % nd4jVersion.value,
@@ -22,14 +31,6 @@ lazy val root = (project in file(".")).settings(
   publishMavenStyle := true,
   publishArtifact in Test := false,
   pomIncludeRepository := { _ => false },
-  publishTo <<= version {
-    v =>
-      val nexus = "https://oss.sonatype.org/"
-      if (v.trim.endsWith("SNAPSHOT"))
-        Some("snapshots" at nexus + "content/repositories/snapshots")
-      else
-        Some("releases" at nexus + "service/local/staging/deploy/maven2")
-  },
   pomExtra := {
     <url>http://nd4j.org/</url>
       <licenses>
@@ -61,4 +62,72 @@ lazy val root = (project in file(".")).settings(
   credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
   releasePublishArtifactsAction := com.typesafe.sbt.pgp.PgpKeys.publishSigned.value,
   releaseCrossBuild := true,
-  initialCommands in console := "import org.nd4j.linalg.factory.Nd4j; import org.nd4s.Implicits._")
+  initialCommands in console := "import org.nd4j.linalg.factory.Nd4j; import org.nd4s.Implicits._"
+)
+
+lazy val publisNexus = Seq(
+  externalResolvers += "Local Sonatype OSS Snapshots" at "http://ec2-54-200-65-148.us-west-2.compute.amazonaws.com:8088/nexus/content/repositories/snapshots/",
+  publishTo := {
+    val nexus = "http://ec2-54-200-65-148.us-west-2.compute.amazonaws.com:8088/nexus/"
+    if (isSnapshot.value)
+      Some("snapshots" at nexus + "content/repositories/snapshots")
+    else
+      Some("releases" at nexus + "service/local/staging/deploy/maven2")
+  }
+)
+
+lazy val publishJfrog = Seq(
+  externalResolvers += "Local JFrog OSS Snapshots" at "http://ec2-54-200-65-148.us-west-2.compute.amazonaws.com:8081/artifactory/libs-snapshot/",
+  publishTo := {
+    val jfrog = "http://ec2-54-200-65-148.us-west-2.compute.amazonaws.com:8081/artifactory/"
+    if (isSnapshot.value)
+      Some("snapshots" at jfrog + "libs-snapshot-local")
+    else
+      Some("releases" at jfrog + "libs-release-local")
+  }
+)
+
+lazy val publishBintray = Seq(
+  externalResolvers += "JFrog OSS Snapshots" at "https://oss.jfrog.org/artifactory/libs-snapshot/",
+  publishTo := {
+    val jfrog = "https://oss.jfrog.org/artifactory/"
+    if (isSnapshot.value)
+      Some("snapshots" at jfrog + "oss-snapshot-local")
+    else
+      Some("releases" at jfrog + "oss-release-local")
+  }
+)
+
+lazy val publishSonatype = Seq(
+  externalResolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
+  publishTo := {
+    val nexus = "https://oss.sonatype.org/"
+    if (isSnapshot.value)
+      Some("snapshots" at nexus + "content/repositories/snapshots")
+    else
+      Some("releases" at nexus + "service/local/staging/deploy/maven2")
+  }
+)
+
+
+
+lazy val publishLocalLocal = Seq(
+  publish := {},
+  publishLocal := {}
+)
+
+
+lazy val root = (project in file(".")).settings(
+  commonSettings,
+  publishSomeThing
+)
+
+lazy val hello = taskKey[Unit]("Test value under line")
+hello := Seq(
+  println("Hello! "),
+  println("USER_HOME is: " + Path.userHome),
+  //  println("ENV_VAR is: " + System.getenv("PWD").value),
+  println("CURRENT_DIR is: " + System.getenv("PWD"))
+
+
+)
