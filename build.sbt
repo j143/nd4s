@@ -121,13 +121,3 @@ lazy val root = (project in file(".")).settings(
   commonSettings,
   publishSomeThing
 )
-
-lazy val hello = taskKey[Unit]("Test value under line")
-hello := Seq(
-  println("Hello! "),
-  println("USER_HOME is: " + Path.userHome),
-  //  println("ENV_VAR is: " + System.getenv("PWD").value),
-  println("CURRENT_DIR is: " + System.getenv("PWD"))
-
-
-)
