@@ -13,7 +13,7 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.11.8",
   crossScalaVersions := Seq("2.10.6", "2.11.8"),
   name := "nd4s",
-  version := sys.props.getOrElse("currentVersion", default = "0.7.2"),
+  version := sys.props.getOrElse("currentVersion", default = "0.7.2-SNAPSHOT"),
   organization := "org.nd4j",
   resolvers += Resolver.mavenLocal,
   nd4jVersion := sys.props.getOrElse("nd4jVersion", default = "0.7.2"),
