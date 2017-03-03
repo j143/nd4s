@@ -1,3 +1,6 @@
+import com.typesafe.sbt.SbtPgp.pgpPassphrase
+import com.typesafe.sbt.pgp.PgpKeys.{publishSigned, useGpg}
+import java.util.Properties
 
 lazy val currentVersion = SettingKey[String]("currentVersion")
 lazy val nd4jVersion = SettingKey[String]("nd4jVersion")
@@ -13,7 +16,7 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.11.8",
   crossScalaVersions := Seq("2.10.6", "2.11.8"),
   name := "nd4s",
-  version := sys.props.getOrElse("currentVersion", default = "0.7.2-SNAPSHOT"),
+  //  version := sys.props.getOrElse("currentVersion", default = "0.7.2-SNAPSHOT"),
   organization := "org.nd4j",
   resolvers += Resolver.mavenLocal,
   nd4jVersion := sys.props.getOrElse("nd4jVersion", default = "0.7.2"),
@@ -60,10 +63,10 @@ lazy val commonSettings = Seq(
       </developers>
   },
   credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
-  releasePublishArtifactsAction := com.typesafe.sbt.pgp.PgpKeys.publishSigned.value,
-  releaseCrossBuild := true,
   initialCommands in console := "import org.nd4j.linalg.factory.Nd4j; import org.nd4s.Implicits._"
 )
+
+import ReleaseTransformations._
 
 lazy val publisNexus = Seq(
   externalResolvers += "Local Sonatype OSS Snapshots" at "http://ec2-54-200-65-148.us-west-2.compute.amazonaws.com:8088/nexus/content/repositories/snapshots/",
@@ -109,15 +112,47 @@ lazy val publishSonatype = Seq(
   }
 )
 
-
-
 lazy val publishLocalLocal = Seq(
   publish := {},
   publishLocal := {}
 )
 
+lazy val releaseProcessCustom = Seq(
+  useGpg := true,
+  releasePublishArtifactsAction := publishSigned.value,
+  pgpPassphrase := Some(passphraseGpg.value.toCharArray),
+  releaseCrossBuild := true,
+  releaseIgnoreUntrackedFiles := true,
+  releaseProcess := Seq[ReleaseStep](
+    checkSnapshotDependencies,
+    inquireVersions,
+    runTest,
+    setReleaseVersion,
+    commitReleaseVersion,
+    tagRelease,
+    publishArtifacts,
+    setNextVersion,
+    commitNextVersion //,
+    //pushChanges
+  )
+)
 
 lazy val root = (project in file(".")).settings(
   commonSettings,
-  publishSomeThing
+  publishSomeThing,
+  releaseProcessCustom
 )
+
+
+/**   This particular part required to Automate Passphrase Entry for this purpose we need to store untracked file "gpg.properties" into project base directory.
+  *   Value in file:  gpgpassphrase = some_value
+  */
+val passphraseGpg = settingKey[String]("The GPG password value")
+val appProperties = settingKey[Properties]("The application properties")
+appProperties := {
+  val prop = new Properties()
+  IO.load(prop, new File("gpg.properties"))
+  prop
+}
+passphraseGpg := appProperties.value.getProperty("gpgpassphrase")
+
