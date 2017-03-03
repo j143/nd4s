@@ -2,6 +2,8 @@ import com.typesafe.sbt.SbtPgp.pgpPassphrase
 import com.typesafe.sbt.pgp.PgpKeys.{publishSigned, useGpg}
 import java.util.Properties
 
+import sbtrelease.ReleasePlugin.autoImport.releaseIgnoreUntrackedFiles
+
 lazy val currentVersion = SettingKey[String]("currentVersion")
 lazy val nd4jVersion = SettingKey[String]("nd4jVersion")
 lazy val publishSomeThing = sys.props.getOrElse("repoType", default = "local").toLowerCase match {
@@ -134,7 +136,8 @@ lazy val releaseProcessCustom = Seq(
     setNextVersion,
     commitNextVersion //,
     //pushChanges
-  )
+  ),
+  releaseTagName := s"nd4s-${if (releaseUseGlobalVersion.value) (version in ThisBuild).value else version.value}-intropro"
 )
 
 lazy val root = (project in file(".")).settings(
