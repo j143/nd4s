@@ -9,6 +9,13 @@ lazy val publishSomeThing = sys.props.getOrElse("repoType", default = "local").t
   case _ => publishLocalLocal
 }
 
+val nexusStagingRepoId = sys.props.getOrElse("stageRepoId", default = "deploy/maven2")
+lazy val releaseRepositoryId = sys.props.getOrElse("stageRepoId", default = "deploy/maven2") match {
+  case stageRepoId if stageRepoId.equals("") => "deploy/maven2"
+  case stageRepoId if stageRepoId.equals("deploy/maven2") => "deploy/maven2"
+  case _ => "deployByRepositoryId/" + nexusStagingRepoId
+}
+
 lazy val commonSettings = Seq(
   scalaVersion := "2.11.8",
   crossScalaVersions := Seq("2.10.6", "2.11.8"),
@@ -72,7 +79,7 @@ lazy val publisNexus = Seq(
     if (isSnapshot.value)
       Some("snapshots" at nexus + "content/repositories/snapshots")
     else
-      Some("releases" at nexus + "service/local/staging/deploy/maven2")
+      Some("releases" at nexus + "service/local/staging/" + releaseRepositoryId)
   }
 )
 
@@ -105,7 +112,7 @@ lazy val publishSonatype = Seq(
     if (isSnapshot.value)
       Some("snapshots" at nexus + "content/repositories/snapshots")
     else
-      Some("releases" at nexus + "service/local/staging/deploy/maven2")
+      Some("releases" at nexus + "service/local/staging/" + releaseRepositoryId)
   }
 )
 
@@ -121,3 +128,4 @@ lazy val root = (project in file(".")).settings(
   commonSettings,
   publishSomeThing
 )
+
