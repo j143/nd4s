@@ -17,7 +17,7 @@ lazy val releaseRepositoryId = sys.props.getOrElse("stageRepoId", default = "dep
 
 lazy val commonSettings = Seq(
   scalaVersion := "2.11.8",
-  crossScalaVersions := Seq("2.10.6", "2.11.8"),
+  crossScalaVersions := Seq("2.10.6", "2.11.8","2.12.0"),
   name := "nd4s",
   version := sys.props.getOrElse("currentVersion", default = "0.7.3-SNAPSHOT"),
   organization := "org.nd4j",
