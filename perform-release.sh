@@ -31,12 +31,12 @@ if [[ "${SKIP_BUILD}" == "0" ]]; then
     sbt +publishSigned
 fi
 
-git commit -a -m "Update to version $RELEASE_VERSION"
-git tag -a -m "nd4s-$RELEASE_VERSION" "nd4s-$RELEASE_VERSION"
-git tag -a -f -m "nd4s-$RELEASE_VERSION" "latest_release"
+git commit -s -a -m "Update to version $RELEASE_VERSION"
+git tag -s -a -m "nd4s-$RELEASE_VERSION" "nd4s-$RELEASE_VERSION"
+git tag -s -a -f -m "nd4s-$RELEASE_VERSION" "latest_release"
 
 sed -i "s/\"currentVersion\", default = \".*\"/\"currentVersion\", default = \"$SNAPSHOT_VERSION\"/" build.sbt
 sed -i "s/\"nd4jVersion\", default = \".*\"/\"nd4jVersion\", default = \"$SNAPSHOT_VERSION\"/" build.sbt
-git commit -a -m "Update to version $SNAPSHOT_VERSION"
+git commit -s -a -m "Update to version $SNAPSHOT_VERSION"
 
 echo "Successfully performed release of version $RELEASE_VERSION ($SNAPSHOT_VERSION) to repository $STAGING_REPOSITORY"
